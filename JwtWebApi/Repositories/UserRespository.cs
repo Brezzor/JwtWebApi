@@ -6,13 +6,13 @@ namespace JwtWebApi.Repositories
         {
                 private int _id;
                 private List<User> _userList;
-                private List<UserProfile> _userProfileList;
+                private List<UserProfileDto> _userProfileList;
 
                 public UserRespository()
                 {
                         _id = 0;
                         _userList = new List<User>();
-                        _userProfileList = new List<UserProfile>();
+                        _userProfileList = new List<UserProfileDto>();
                 }
 
                 public User? AuthLogin(UserDto request)
@@ -41,7 +41,7 @@ namespace JwtWebApi.Repositories
                                 PasswordSalt = passwordSalt
                         };
 
-                        UserProfile newUserProfile = new UserProfile()
+                        UserProfileDto newUserProfile = new UserProfileDto()
                         {
                                 Username = username,
                         };
@@ -52,7 +52,7 @@ namespace JwtWebApi.Repositories
                         return false;
                 }
 
-                public UserProfile? GetUserProfile(string username)
+                public UserProfileDto? GetUserProfile(string username)
                 {
                         if (username == null)
                         {
@@ -62,21 +62,24 @@ namespace JwtWebApi.Repositories
                         return _userProfileList.Find(user => user.Username == username);
                 }
 
-                public UserProfile? UpdateUserProfile(UserProfile userProfile)
+                public EditUserDto? UpdateUserProfile(string username, EditUserDto editUser)
                 {
-                        UserProfile? user = GetUserProfile(userProfile.Username);
+                        UserProfileDto? user = GetUserProfile(username);
 
                         if (user == null)
                         {
                                 return null;
                         }
 
-                        int index = _userProfileList.FindIndex(u => u.Username == user.Username);
-                        _userProfileList[index] = userProfile;
-
-                        index = _userList.FindIndex(u => u.Username == user.Username);
-                        _userList[index].Username = userProfile.Username;
-                        return userProfile;
+                        int index = _userProfileList.FindIndex(u => u.Username == username);
+                        _userProfileList[index] = new UserProfileDto
+                        {
+                                Username = username,
+                                FirstName = editUser.FirstName,
+                                LastName = editUser.LastName,
+                                Email = editUser.Email,
+                        };
+                        return editUser;
                 }
         }
 }

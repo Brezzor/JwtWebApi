@@ -24,24 +24,36 @@ namespace JwtWebApi.Controllers
                 {
                         string? username = HttpContext.User.Identity!.Name;
 
-                        UserProfile? user = _userRespository.GetUserProfile(username!);
+                        if (username == null)
+                        {
+                                return BadRequest("No valid username");
+                        }
+
+                        UserProfileDto? user = _userRespository.GetUserProfile(username!);
 
                         if (user == null)
                         {
-                                return BadRequest("No UserProfile");
+                                return NotFound("No UserProfile with given username");
                         }
 
                         return Ok(user);
                 }
 
                 [HttpPut("updateProfile")]
-                public ActionResult UpdateUserProfile([FromBody] UserProfile userProfile)
+                public ActionResult UpdateUserProfile([FromBody] EditUserDto editUser)
                 {
-                        UserProfile? user = _userRespository.UpdateUserProfile(userProfile);
+                        string? username = HttpContext.User.Identity!.Name;
+
+                        if (username == null)
+                        {
+                                return BadRequest("No valid username");
+                        }
+
+                        EditUserDto? user = _userRespository.UpdateUserProfile(username, editUser);
 
                         if (user == null)
                         {
-                                return BadRequest();
+                                return NotFound("No UserProfile with given username");
                         }
 
                         return Ok(user);
